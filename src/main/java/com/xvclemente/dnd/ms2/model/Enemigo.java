@@ -2,9 +2,12 @@ package com.xvclemente.dnd.ms2.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @Data
 @NoArgsConstructor
+@DynamoDbBean
 public class Enemigo {
     private String id;
     private String nombre;
@@ -29,6 +32,11 @@ public class Enemigo {
         this.defensaBase = defensaBase;
         resetStats();
     }
+
+    @DynamoDbPartitionKey
+    public String getId() {
+        return id;
+    }    
 
     public void resetStats() {
         this.hpActual = this.hpBase;

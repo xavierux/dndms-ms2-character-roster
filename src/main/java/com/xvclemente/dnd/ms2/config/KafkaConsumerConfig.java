@@ -1,6 +1,7 @@
 package com.xvclemente.dnd.ms2.config;
 
 import com.xvclemente.dnd.dtos.events.AventuraCreadaEvent;
+import com.xvclemente.dnd.dtos.events.AventuraFinalizadaEvent;
 import com.xvclemente.dnd.dtos.events.ResultadoCombateIndividualEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -47,6 +48,13 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, ResultadoCombateIndividualEvent> resultadoCombateIndividualEventKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, ResultadoCombateIndividualEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(createConsumerFactory(ResultadoCombateIndividualEvent.class));
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, AventuraFinalizadaEvent> aventuraFinalizadaEventKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AventuraFinalizadaEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(createConsumerFactory(AventuraFinalizadaEvent.class));
         return factory;
     }
 }

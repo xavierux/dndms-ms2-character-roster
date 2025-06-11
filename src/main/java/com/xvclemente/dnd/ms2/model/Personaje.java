@@ -2,9 +2,12 @@ package com.xvclemente.dnd.ms2.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
+import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
 @Data
 @NoArgsConstructor
+@DynamoDbBean
 public class Personaje {
     private String id;
     private String nombre;
@@ -20,6 +23,8 @@ public class Personaje {
     private int defensaActual;
     private int victorias = 0;
     private boolean vivo = true;
+    private int oro = 0;
+
 
     public Personaje(String id, String nombre, String tipoAventuraPreferida, String entornoPreferido, int hpBase, int ataqueBase, int defensaBase) {
         this.id = id;
@@ -30,6 +35,11 @@ public class Personaje {
         this.ataqueBase = ataqueBase;
         this.defensaBase = defensaBase;
         resetStats(); // Inicializar stats actuales
+    }
+
+    @DynamoDbPartitionKey
+    public String getId() {
+        return id;
     }
 
     public void resetStats() {
@@ -52,5 +62,9 @@ public class Personaje {
     public void marcarComoDerrotado() {
         this.hpActual = 0;
         this.vivo = false;
+    }
+
+    public void agregarOro(int cantidad) {
+        this.oro += cantidad;
     }
 }
