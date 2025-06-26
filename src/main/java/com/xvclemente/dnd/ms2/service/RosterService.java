@@ -1,16 +1,18 @@
 package com.xvclemente.dnd.ms2.service;
 
 import com.xvclemente.dnd.dtos.events.AventuraFinalizadaEvent;
+import com.xvclemente.dnd.dtos.events.CombatantStatsDto;
 import com.xvclemente.dnd.ms2.model.Enemigo;
 import com.xvclemente.dnd.ms2.model.Personaje;
-import com.xvclemente.dnd.ms2.repository.EnemigoRepository; // IMPORTAR REPO
-import com.xvclemente.dnd.ms2.repository.PersonajeRepository; // IMPORTAR REPO
+import com.xvclemente.dnd.ms2.repository.EnemigoRepository;
+import com.xvclemente.dnd.ms2.repository.PersonajeRepository;
 
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -99,6 +101,38 @@ public class RosterService {
             .limit(numEncounters)
             .map(Enemigo::getId)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtiene un mapa de los PJs que se unen a la aventura con sus stats.
+     * @return Un mapa donde la clave es el ID del PJ y el valor es un DTO con sus stats.
+     */
+    public Map<String, CombatantStatsDto> getParticipatingCharactersMap(String challengeType, String environment) {
+        return personajeRepository.findAll().stream()
+            .filter(Personaje::isVivo)
+            .filter(p -> p.getTipoAventuraPreferida().equalsIgnoreCase("todas") ||
+                         p.getTipoAventuraPreferida().equalsIgnoreCase(challengeType) ||
+                         p.getEntornoPreferido().equalsIgnoreCase("cualquiera") ||
+                         p.getEntornoPreferido().equalsIgnoreCase(environment))
+            .collect(Collectors.toMap(
+                Personaje::getId,
+                p -> new CombatantStatsDto(p.getNombre(), p.getHpActual(), p.getAtaqueActual(), p.getDefensaActual())
+            ));
+    }
+
+    /**
+     * Obtiene un mapa de los Enemigos para la aventura con sus stats.
+     * @return Un mapa donde la clave es el ID del Enemigo y el valor es un DTO con sus stats.
+     */
+    public Map<String, CombatantStatsDto> getParticipatingEnemiesMap(String environment, int numEncounters) {
+        return enemigoRepository.findAll().stream()
+            .filter(Enemigo::isVivo)
+            .filter(e -> e.getTipoEntorno().equalsIgnoreCase(environment) || e.getTipoEntorno().equalsIgnoreCase("cualquiera"))
+            .limit(numEncounters)
+            .collect(Collectors.toMap(
+                Enemigo::getId,
+                e -> new CombatantStatsDto(e.getNombre(), e.getHpActual(), e.getAtaqueActual(), e.getDefensaActual())
+            ));
     }
 
     public void procesarVictoria(String winnerId, String winnerType) {
