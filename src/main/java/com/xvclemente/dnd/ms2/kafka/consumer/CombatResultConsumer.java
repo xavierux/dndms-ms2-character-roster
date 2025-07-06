@@ -26,13 +26,8 @@ public class CombatResultConsumer {
                    groupId = "${spring.kafka.consumer.group-id}",
                    containerFactory = "resultadoCombateIndividualEventKafkaListenerContainerFactory")
     public void handleResultadoCombateIndividual(@Payload ResultadoCombateIndividualEvent event) {
-        log.info("MS2: ResultadoCombateIndividualEvent recibido para adventureId: {}, Encuentro N°: {}",
-                event.getAdventureId(), event.getEncounterNum());
-        log.info("MS2: Ganador: {} (ID: {}), Perdedor: {} (ID: {})",
-                event.getWinnerType(), event.getWinnerId(), event.getLoserType(), event.getLoserId());
-
-        rosterService.procesarVictoria(event.getWinnerId(), event.getWinnerType());
-        rosterService.procesarDerrota(event.getLoserId(), event.getLoserType());
+        log.info("MS2: ResultadoCombateIndividualEvent recibido...");
+        rosterService.procesarResultadoCombate(event);
     }
 
     @KafkaListener(topics = "${app.kafka.topic.aventura-finalizada}", // Asegúrate de tener esta propiedad en application.properties

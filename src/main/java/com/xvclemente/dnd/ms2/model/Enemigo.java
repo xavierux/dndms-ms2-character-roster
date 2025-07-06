@@ -1,5 +1,10 @@
 package com.xvclemente.dnd.ms2.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.xvclemente.dnd.dtos.events.CombatantStatsDto;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
@@ -11,7 +16,7 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 public class Enemigo {
     private String id;
     private String nombre;
-    private String tipoEntorno; // Entorno donde suele aparecer
+    private List<String> entornosPreferidos = new ArrayList<>();
 
     private int hpBase = 50;
     private int ataqueBase = 8;
@@ -23,10 +28,10 @@ public class Enemigo {
     private int victorias = 0; // Los enemigos también pueden tener victorias
     private boolean vivo = true;
 
-    public Enemigo(String id, String nombre, String tipoEntorno, int hpBase, int ataqueBase, int defensaBase) {
+    public Enemigo(String id, String nombre, List<String> entornos, int hpBase, int ataqueBase, int defensaBase) {
         this.id = id;
         this.nombre = nombre;
-        this.tipoEntorno = tipoEntorno;
+        this.entornosPreferidos = entornos;
         this.hpBase = hpBase;
         this.ataqueBase = ataqueBase;
         this.defensaBase = defensaBase;
@@ -58,4 +63,11 @@ public class Enemigo {
         this.hpActual = 0;
         this.vivo = false;
     }
+
+    /**
+     * Método de conveniencia para crear un DTO con las stats actuales.
+     */
+    public CombatantStatsDto getStatsDto() {
+        return new CombatantStatsDto(this.getNombre(), this.getHpActual(), this.getAtaqueActual(), this.getDefensaActual());
+    }    
 }

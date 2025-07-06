@@ -1,5 +1,8 @@
 package com.xvclemente.dnd.ms2.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
@@ -11,8 +14,8 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 public class Personaje {
     private String id;
     private String nombre;
-    private String tipoAventuraPreferida; // ej: "investigar", "todas"
-    private String entornoPreferido; // ej: "ruina olvidada", "cualquiera"
+    private List<String> tiposAventuraPreferidos = new ArrayList<>();
+    private List<String> entornosPreferidos = new ArrayList<>();
 
     private int hpBase = 100;
     private int ataqueBase = 10;
@@ -26,20 +29,24 @@ public class Personaje {
     private int oro = 0;
 
 
-    public Personaje(String id, String nombre, String tipoAventuraPreferida, String entornoPreferido, int hpBase, int ataqueBase, int defensaBase) {
+    public Personaje(String id, String nombre, List<String> tiposAventura, List<String> entornos, int hpBase, int ataqueBase, int defensaBase) {
         this.id = id;
         this.nombre = nombre;
-        this.tipoAventuraPreferida = tipoAventuraPreferida;
-        this.entornoPreferido = entornoPreferido;
+        this.tiposAventuraPreferidos = tiposAventura;
+        this.entornosPreferidos = entornos;
         this.hpBase = hpBase;
         this.ataqueBase = ataqueBase;
         this.defensaBase = defensaBase;
-        resetStats(); // Inicializar stats actuales
+        resetStats();
     }
 
     @DynamoDbPartitionKey
     public String getId() {
         return id;
+    }
+
+    public com.xvclemente.dnd.dtos.events.CombatantStatsDto getStatsDto() {
+        return new com.xvclemente.dnd.dtos.events.CombatantStatsDto(this.getNombre(), this.getHpActual(), this.getAtaqueActual(), this.getDefensaActual());
     }
 
     public void resetStats() {
